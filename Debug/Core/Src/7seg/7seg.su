@@ -1,0 +1,10 @@
+7seg.c:26:6:HAL_TIM_PeriodElapsedCallback	16	static
+7seg.c:45:6:__LEDsegmentOn	16	static
+7seg.c:65:6:__LEDfieldOn	16	static
+7seg.c:88:6:__LEDallOff	8	static
+7seg.c:116:6:__LEDwriteCharacter	16	static
+7seg.c:241:6:LEDinit	8	static
+7seg.c:258:6:LEDchar	16	static
+7seg.c:274:6:LEDint	32	static
+7seg.c:307:6:LEDclear	8	static
+7seg.c:323:6:LEDdot	16	static
