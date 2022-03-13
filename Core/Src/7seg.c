@@ -21,10 +21,13 @@ volatile uint8_t actualField = FIELD_0;
 uint8_t LEDbuffer[FIELDS];
 uint8_t DOTbuffer[FIELDS];
 
-//switching fields
+static void _LEDsegmentOn(uint8_t segment);
+static void _LEDfieldOn(uint8_t field);
+static void _LEDallOff(void);
+static void _LEDwriteCharacter(uint8_t character);
 
 
-void _LEDmuliplexing(void) {
+void LEDmultiplexing(void) {
 	actualField++;
 	if (actualField >= FIELDS)
 		actualField = 0;
@@ -38,7 +41,8 @@ void _LEDmuliplexing(void) {
 	}
 }
 
-void _LEDsegmentOn(uint8_t segment) {
+static void _LEDsegmentOn(uint8_t segment) {
+
 	if (segment == DISP_SEG_A)
 		HAL_GPIO_WritePin(DISP_SEG_A_GPIO_Port, DISP_SEG_A_Pin, SEGMENT_ON);
 	else if (segment == DISP_SEG_B)
@@ -57,7 +61,7 @@ void _LEDsegmentOn(uint8_t segment) {
 		HAL_GPIO_WritePin(DISP_SEG_DOT_GPIO_Port, DISP_SEG_DOT_Pin, SEGMENT_ON);
 }
 
-void _LEDfieldOn(uint8_t field) {
+static void _LEDfieldOn(uint8_t field) {
 
 #if FIELDS >=1
 	if (field == FIELD_0)
@@ -80,7 +84,7 @@ void _LEDfieldOn(uint8_t field) {
 #endif
 }
 
-void _LEDallOff(void) {
+static void _LEDallOff(void) {
 
 #if FIELDS >=1
 	HAL_GPIO_WritePin(DISP_FIELD_0_GPIO_Port, DISP_FIELD_0_Pin, FIELD_OFF);
@@ -106,7 +110,7 @@ void _LEDallOff(void) {
 
 }
 
-void _LEDwriteCharacter(uint8_t character) {
+static void _LEDwriteCharacter(uint8_t character) {
 
 	if (character == 1 || character == '1') {
 		_LEDsegmentOn(DISP_SEG_B);

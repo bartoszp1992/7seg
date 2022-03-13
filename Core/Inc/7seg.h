@@ -79,12 +79,7 @@ extern TIM_HandleTypeDef htim1;
 #define FIELD_3 3
 #endif
 
-void _LEDmuliplexing(void);
-void _LEDsegmentOn(uint8_t segment);
-void _LEDfieldOn(uint8_t field);
-void _LEDallOff(void);
-void _LEDwriteCharacter(uint8_t character);
-
+void LEDmultiplexing(void);
 void LEDinit(void);
 void LEDchar(uint8_t offset, uint8_t digit);
 void LEDint(uint8_t offset, uint16_t number);

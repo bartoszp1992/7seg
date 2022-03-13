@@ -2715,21 +2715,17 @@ LOAD /opt/st/stm32cubeide_1.8.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
                 0x0000000008000214                __aeabi_ldiv0
                 0x0000000008000214                __aeabi_idiv0
  *(.text*)
- .text._LEDmuliplexing
+ .text.LEDmultiplexing
                 0x0000000008000218       0x78 ./Core/Src/7seg.o
-                0x0000000008000218                _LEDmuliplexing
+                0x0000000008000218                LEDmultiplexing
  .text._LEDsegmentOn
                 0x0000000008000290       0xd4 ./Core/Src/7seg.o
-                0x0000000008000290                _LEDsegmentOn
  .text._LEDfieldOn
                 0x0000000008000364       0x7c ./Core/Src/7seg.o
-                0x0000000008000364                _LEDfieldOn
  .text._LEDallOff
                 0x00000000080003e0       0xb8 ./Core/Src/7seg.o
-                0x00000000080003e0                _LEDallOff
  .text._LEDwriteCharacter
                 0x0000000008000498      0x348 ./Core/Src/7seg.o
-                0x0000000008000498                _LEDwriteCharacter
  .text.LEDinit  0x00000000080007e0        0xe ./Core/Src/7seg.o
                 0x00000000080007e0                LEDinit
  *fill*         0x00000000080007ee        0x2 
@@ -3148,20 +3144,20 @@ LOAD /opt/st/stm32cubeide_1.8.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
  .debug_info    0x00000000000069d0     0x2ce1 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_tim.o
  .debug_info    0x00000000000096b1     0x1929 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_tim_ex.o
 
-.debug_abbrev   0x0000000000000000     0x1a58
- .debug_abbrev  0x0000000000000000      0x2ba ./Core/Src/7seg.o
- .debug_abbrev  0x00000000000002ba      0x257 ./Core/Src/main.o
- .debug_abbrev  0x0000000000000511      0x1c8 ./Core/Src/stm32g0xx_hal_msp.o
- .debug_abbrev  0x00000000000006d9      0x198 ./Core/Src/stm32g0xx_it.o
- .debug_abbrev  0x0000000000000871      0x165 ./Core/Src/system_stm32g0xx.o
- .debug_abbrev  0x00000000000009d6       0x12 ./Core/Startup/startup_stm32g070kbtx.o
- .debug_abbrev  0x00000000000009e8      0x276 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal.o
- .debug_abbrev  0x0000000000000c5e      0x2c5 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_cortex.o
- .debug_abbrev  0x0000000000000f23      0x1df ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_gpio.o
- .debug_abbrev  0x0000000000001102      0x204 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_pwr_ex.o
- .debug_abbrev  0x0000000000001306      0x25b ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_rcc.o
- .debug_abbrev  0x0000000000001561      0x280 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_tim.o
- .debug_abbrev  0x00000000000017e1      0x277 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_tim_ex.o
+.debug_abbrev   0x0000000000000000     0x1a6e
+ .debug_abbrev  0x0000000000000000      0x2d0 ./Core/Src/7seg.o
+ .debug_abbrev  0x00000000000002d0      0x257 ./Core/Src/main.o
+ .debug_abbrev  0x0000000000000527      0x1c8 ./Core/Src/stm32g0xx_hal_msp.o
+ .debug_abbrev  0x00000000000006ef      0x198 ./Core/Src/stm32g0xx_it.o
+ .debug_abbrev  0x0000000000000887      0x165 ./Core/Src/system_stm32g0xx.o
+ .debug_abbrev  0x00000000000009ec       0x12 ./Core/Startup/startup_stm32g070kbtx.o
+ .debug_abbrev  0x00000000000009fe      0x276 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal.o
+ .debug_abbrev  0x0000000000000c74      0x2c5 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_cortex.o
+ .debug_abbrev  0x0000000000000f39      0x1df ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_gpio.o
+ .debug_abbrev  0x0000000000001118      0x204 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_pwr_ex.o
+ .debug_abbrev  0x000000000000131c      0x25b ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_rcc.o
+ .debug_abbrev  0x0000000000001577      0x280 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_tim.o
+ .debug_abbrev  0x00000000000017f7      0x277 ./Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_tim_ex.o
 
 .debug_aranges  0x0000000000000000      0xa60
  .debug_aranges

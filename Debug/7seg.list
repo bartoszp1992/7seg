@@ -29,21 +29,21 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
  12 .debug_info   0000afda  00000000  00000000  00020034  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00001a58  00000000  00000000  0002b00e  2**0
+ 13 .debug_abbrev 00001a6e  00000000  00000000  0002b00e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000a60  00000000  00000000  0002ca68  2**3
+ 14 .debug_aranges 00000a60  00000000  00000000  0002ca80  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00000998  00000000  00000000  0002d4c8  2**3
+ 15 .debug_ranges 00000998  00000000  00000000  0002d4e0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00014f0f  00000000  00000000  0002de60  2**0
+ 16 .debug_macro  00014f0f  00000000  00000000  0002de78  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000b623  00000000  00000000  00042d6f  2**0
+ 17 .debug_line   0000b623  00000000  00000000  00042d87  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00086d68  00000000  00000000  0004e392  2**0
+ 18 .debug_str    00086d68  00000000  00000000  0004e3aa  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  000d50fa  2**0
+ 19 .comment      00000053  00000000  00000000  000d5112  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00002584  00000000  00000000  000d5150  2**2
+ 20 .debug_frame  00002584  00000000  00000000  000d5168  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -227,63 +227,63 @@ Disassembly of section .text:
  8000214:	4770      	bx	lr
  8000216:	46c0      	nop			; (mov r8, r8)
 
-08000218 <_LEDmuliplexing>:
-uint8_t DOTbuffer[FIELDS];
+08000218 <LEDmultiplexing>:
+static void _LEDfieldOn(uint8_t field);
+static void _LEDallOff(void);
+static void _LEDwriteCharacter(uint8_t character);
 
-//switching fields
 
-
-void _LEDmuliplexing(void) {
+void LEDmultiplexing(void) {
  8000218:	b580      	push	{r7, lr}
  800021a:	af00      	add	r7, sp, #0
 	actualField++;
- 800021c:	4b18      	ldr	r3, [pc, #96]	; (8000280 <_LEDmuliplexing+0x68>)
+ 800021c:	4b18      	ldr	r3, [pc, #96]	; (8000280 <LEDmultiplexing+0x68>)
  800021e:	781b      	ldrb	r3, [r3, #0]
  8000220:	b2db      	uxtb	r3, r3
  8000222:	3301      	adds	r3, #1
  8000224:	b2da      	uxtb	r2, r3
- 8000226:	4b16      	ldr	r3, [pc, #88]	; (8000280 <_LEDmuliplexing+0x68>)
+ 8000226:	4b16      	ldr	r3, [pc, #88]	; (8000280 <LEDmultiplexing+0x68>)
  8000228:	701a      	strb	r2, [r3, #0]
 	if (actualField >= FIELDS)
- 800022a:	4b15      	ldr	r3, [pc, #84]	; (8000280 <_LEDmuliplexing+0x68>)
+ 800022a:	4b15      	ldr	r3, [pc, #84]	; (8000280 <LEDmultiplexing+0x68>)
  800022c:	781b      	ldrb	r3, [r3, #0]
  800022e:	b2db      	uxtb	r3, r3
  8000230:	2b03      	cmp	r3, #3
- 8000232:	d902      	bls.n	800023a <_LEDmuliplexing+0x22>
+ 8000232:	d902      	bls.n	800023a <LEDmultiplexing+0x22>
 		actualField = 0;
- 8000234:	4b12      	ldr	r3, [pc, #72]	; (8000280 <_LEDmuliplexing+0x68>)
+ 8000234:	4b12      	ldr	r3, [pc, #72]	; (8000280 <LEDmultiplexing+0x68>)
  8000236:	2200      	movs	r2, #0
  8000238:	701a      	strb	r2, [r3, #0]
 
 	_LEDallOff();
  800023a:	f000 f8d1 	bl	80003e0 <_LEDallOff>
 	_LEDfieldOn(actualField);
- 800023e:	4b10      	ldr	r3, [pc, #64]	; (8000280 <_LEDmuliplexing+0x68>)
+ 800023e:	4b10      	ldr	r3, [pc, #64]	; (8000280 <LEDmultiplexing+0x68>)
  8000240:	781b      	ldrb	r3, [r3, #0]
  8000242:	b2db      	uxtb	r3, r3
  8000244:	0018      	movs	r0, r3
  8000246:	f000 f88d 	bl	8000364 <_LEDfieldOn>
 	_LEDwriteCharacter(LEDbuffer[actualField]);
- 800024a:	4b0d      	ldr	r3, [pc, #52]	; (8000280 <_LEDmuliplexing+0x68>)
+ 800024a:	4b0d      	ldr	r3, [pc, #52]	; (8000280 <LEDmultiplexing+0x68>)
  800024c:	781b      	ldrb	r3, [r3, #0]
  800024e:	b2db      	uxtb	r3, r3
  8000250:	001a      	movs	r2, r3
- 8000252:	4b0c      	ldr	r3, [pc, #48]	; (8000284 <_LEDmuliplexing+0x6c>)
+ 8000252:	4b0c      	ldr	r3, [pc, #48]	; (8000284 <LEDmultiplexing+0x6c>)
  8000254:	5c9b      	ldrb	r3, [r3, r2]
  8000256:	0018      	movs	r0, r3
  8000258:	f000 f91e 	bl	8000498 <_LEDwriteCharacter>
 
 	if (DOTbuffer[actualField] == 1) {
- 800025c:	4b08      	ldr	r3, [pc, #32]	; (8000280 <_LEDmuliplexing+0x68>)
+ 800025c:	4b08      	ldr	r3, [pc, #32]	; (8000280 <LEDmultiplexing+0x68>)
  800025e:	781b      	ldrb	r3, [r3, #0]
  8000260:	b2db      	uxtb	r3, r3
  8000262:	001a      	movs	r2, r3
- 8000264:	4b08      	ldr	r3, [pc, #32]	; (8000288 <_LEDmuliplexing+0x70>)
+ 8000264:	4b08      	ldr	r3, [pc, #32]	; (8000288 <LEDmultiplexing+0x70>)
  8000266:	5c9b      	ldrb	r3, [r3, r2]
  8000268:	2b01      	cmp	r3, #1
- 800026a:	d105      	bne.n	8000278 <_LEDmuliplexing+0x60>
+ 800026a:	d105      	bne.n	8000278 <LEDmultiplexing+0x60>
 		HAL_GPIO_WritePin(DISP_SEG_DOT_GPIO_Port, DISP_SEG_DOT_Pin, SEGMENT_ON);
- 800026c:	4b07      	ldr	r3, [pc, #28]	; (800028c <_LEDmuliplexing+0x74>)
+ 800026c:	4b07      	ldr	r3, [pc, #28]	; (800028c <LEDmultiplexing+0x74>)
  800026e:	2200      	movs	r2, #0
  8000270:	2140      	movs	r1, #64	; 0x40
  8000272:	0018      	movs	r0, r3
@@ -301,13 +301,14 @@ void _LEDmuliplexing(void) {
 
 08000290 <_LEDsegmentOn>:
 
-void _LEDsegmentOn(uint8_t segment) {
+static void _LEDsegmentOn(uint8_t segment) {
  8000290:	b580      	push	{r7, lr}
  8000292:	b082      	sub	sp, #8
  8000294:	af00      	add	r7, sp, #0
  8000296:	0002      	movs	r2, r0
  8000298:	1dfb      	adds	r3, r7, #7
  800029a:	701a      	strb	r2, [r3, #0]
+
 	if (segment == DISP_SEG_A)
  800029c:	1dfb      	adds	r3, r7, #7
  800029e:	781b      	ldrb	r3, [r3, #0]
@@ -430,7 +431,7 @@ void _LEDsegmentOn(uint8_t segment) {
 
 08000364 <_LEDfieldOn>:
 
-void _LEDfieldOn(uint8_t field) {
+static void _LEDfieldOn(uint8_t field) {
  8000364:	b580      	push	{r7, lr}
  8000366:	b082      	sub	sp, #8
  8000368:	af00      	add	r7, sp, #0
@@ -510,7 +511,7 @@ void _LEDfieldOn(uint8_t field) {
 
 080003e0 <_LEDallOff>:
 
-void _LEDallOff(void) {
+static void _LEDallOff(void) {
  80003e0:	b580      	push	{r7, lr}
  80003e2:	af00      	add	r7, sp, #0
 
@@ -616,7 +617,7 @@ void _LEDallOff(void) {
 
 08000498 <_LEDwriteCharacter>:
 
-void _LEDwriteCharacter(uint8_t character) {
+static void _LEDwriteCharacter(uint8_t character) {
  8000498:	b580      	push	{r7, lr}
  800049a:	b082      	sub	sp, #8
  800049c:	af00      	add	r7, sp, #0
@@ -1927,8 +1928,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
  8000cc8:	4a04      	ldr	r2, [pc, #16]	; (8000cdc <HAL_TIM_PeriodElapsedCallback+0x20>)
  8000cca:	4293      	cmp	r3, r2
  8000ccc:	d101      	bne.n	8000cd2 <HAL_TIM_PeriodElapsedCallback+0x16>
-		_LEDmuliplexing();
- 8000cce:	f7ff faa3 	bl	8000218 <_LEDmuliplexing>
+		LEDmultiplexing();
+ 8000cce:	f7ff faa3 	bl	8000218 <LEDmultiplexing>
 	}
 
 }
