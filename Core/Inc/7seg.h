@@ -15,11 +15,6 @@
 #define COMMON_ANODE 1
 //number of fields
 #define FIELDS 4
-//used timer handler
-#define MULTIPLEXING_TIMER &htim1
-//used timer number
-#define MULTIPLEXING_TIMER_NUMBER TIM1
-//END OF USER CONFIGURATION
 
 extern TIM_HandleTypeDef htim1;
 
@@ -84,10 +79,11 @@ extern TIM_HandleTypeDef htim1;
 #define FIELD_3 3
 #endif
 
-void __LEDsegmentOn(uint8_t segment);
-void __LEDfieldOn(uint8_t field);
-void __LEDallOff(void);
-void __LEDwriteCharacter(uint8_t character);
+void _LEDmuliplexing(void);
+void _LEDsegmentOn(uint8_t segment);
+void _LEDfieldOn(uint8_t field);
+void _LEDallOff(void);
+void _LEDwriteCharacter(uint8_t character);
 
 void LEDinit(void);
 void LEDchar(uint8_t offset, uint8_t digit);

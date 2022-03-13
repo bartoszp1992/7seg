@@ -1,4 +1,4 @@
-"./Core/Src/7seg/7seg.o"
+"./Core/Src/7seg.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32g0xx_hal_msp.o"
 "./Core/Src/stm32g0xx_it.o"
