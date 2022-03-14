@@ -6,6 +6,7 @@
  *      varsion: 1.3
  *
  *      changelog:
+ *      1.3 - display as structure
  *
  */
 
