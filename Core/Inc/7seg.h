@@ -16,7 +16,41 @@
 //number of fields
 #define FIELDS 4
 
-extern TIM_HandleTypeDef htim1;
+typedef struct{
+	uint16_t SegAPin;
+	GPIO_TypeDef *SegAPort;
+	uint16_t SegBPin;
+	GPIO_TypeDef *SegBPort;
+	uint16_t SegCPin;
+	GPIO_TypeDef *SegCPort;
+	uint16_t SegDPin;
+	GPIO_TypeDef *SegDPort;
+	uint16_t SegEPin;
+	GPIO_TypeDef *SegEPort;
+	uint16_t SegFPin;
+	GPIO_TypeDef *SegFPort;
+	uint16_t SegGPin;
+	GPIO_TypeDef *SegGPort;
+	uint16_t SegDOTPin;
+	GPIO_TypeDef *SegDOTPort;
+
+	uint16_t Field0Pin;
+	GPIO_TypeDef *Field0Port;
+	uint16_t Field1Pin;
+	GPIO_TypeDef *Field1Port;
+	uint16_t Field2Pin;
+	GPIO_TypeDef *Field2Port;
+	uint16_t Field3Pin;
+	GPIO_TypeDef *Field3Port;
+
+	uint8_t LEDbuffer[FIELDS];
+	uint8_t DOTbuffer[FIELDS];
+
+	uint8_t actualField;
+} LEDdisplayTypeDef;
+
+
+//extern TIM_HandleTypeDef htim1;
 
 #if FIELDS == 1
 #define MAX_NUMBER 9
@@ -79,11 +113,11 @@ extern TIM_HandleTypeDef htim1;
 #define FIELD_3 3
 #endif
 
-void LEDmultiplexing(void);
-void LEDinit(void);
-void LEDchar(uint8_t offset, uint8_t digit);
-void LEDint(uint8_t offset, uint16_t number);
-void LEDclear(void);
-void LEDdot(uint8_t dotNum, uint8_t active);
+void LEDmultiplexing(LEDdisplayTypeDef* LEDdisplay);
+void LEDinit(LEDdisplayTypeDef* LEDdisplay);
+void LEDchar(LEDdisplayTypeDef* LEDdisplay, uint8_t offset, uint8_t digit);
+void LEDint(LEDdisplayTypeDef* LEDdisplay, uint8_t offset, uint16_t number);
+void LEDclear(LEDdisplayTypeDef* LEDdisplay);
+void LEDdot(LEDdisplayTypeDef* LEDdisplay, uint8_t dotNum, uint8_t active);
 
 #endif /* SRC_7DISP_SEG_7DISP_SEG_H_ */

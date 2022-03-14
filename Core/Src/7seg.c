@@ -3,7 +3,7 @@
  *
  *  Created on: 11 mar 2022
  *      Author: Bartosz
- *      varsion: 1.0
+ *      varsion: 1.3
  *
  *      changelog:
  *
@@ -14,214 +14,236 @@
 #include <stdlib.h>
 #include <string.h>
 
-//variable for store actualy displayed field
-volatile uint8_t actualField = FIELD_0;
-
-//buffers storing chars and dots
-uint8_t LEDbuffer[FIELDS];
-uint8_t DOTbuffer[FIELDS];
-
-static void _LEDsegmentOn(uint8_t segment);
-static void _LEDfieldOn(uint8_t field);
-static void _LEDallOff(void);
-static void _LEDwriteCharacter(uint8_t character);
 
 
-void LEDmultiplexing(void) {
-	actualField++;
-	if (actualField >= FIELDS)
-		actualField = 0;
+static void _LEDsegmentOn(LEDdisplayTypeDef* LEDdisplay, uint8_t segment);
+static void _LEDfieldOn(LEDdisplayTypeDef* LEDdisplay, uint8_t field);
+static void _LEDallOff(LEDdisplayTypeDef* LEDdisplay);
+static void _LEDwriteCharacter(LEDdisplayTypeDef* LEDdisplay, uint8_t character);
 
-	_LEDallOff();
-	_LEDfieldOn(actualField);
-	_LEDwriteCharacter(LEDbuffer[actualField]);
 
-	if (DOTbuffer[actualField] == 1) {
-		HAL_GPIO_WritePin(DISP_SEG_DOT_GPIO_Port, DISP_SEG_DOT_Pin, SEGMENT_ON);
+void LEDmultiplexing(LEDdisplayTypeDef* LEDdisplay) {
+	LEDdisplay->actualField++;
+	if (LEDdisplay->actualField >= FIELDS)
+		LEDdisplay->actualField = 0;
+
+	_LEDallOff(LEDdisplay);
+	_LEDfieldOn(LEDdisplay, LEDdisplay->actualField);
+	_LEDwriteCharacter(LEDdisplay, LEDdisplay->LEDbuffer[LEDdisplay->actualField]);
+
+	if (LEDdisplay->DOTbuffer[LEDdisplay->actualField] == 1) {
+		HAL_GPIO_WritePin(LEDdisplay->SegDOTPort, LEDdisplay->SegDOTPin, SEGMENT_ON);
 	}
 }
 
-static void _LEDsegmentOn(uint8_t segment) {
+static void _LEDsegmentOn(LEDdisplayTypeDef* LEDdisplay, uint8_t segment) {
 
 	if (segment == DISP_SEG_A)
-		HAL_GPIO_WritePin(DISP_SEG_A_GPIO_Port, DISP_SEG_A_Pin, SEGMENT_ON);
+		HAL_GPIO_WritePin(LEDdisplay->SegAPort, LEDdisplay->SegAPin, SEGMENT_ON);
 	else if (segment == DISP_SEG_B)
-		HAL_GPIO_WritePin(DISP_SEG_B_GPIO_Port, DISP_SEG_B_Pin, SEGMENT_ON);
+		HAL_GPIO_WritePin(LEDdisplay->SegBPort, LEDdisplay->SegBPin, SEGMENT_ON);
 	else if (segment == DISP_SEG_C)
-		HAL_GPIO_WritePin(DISP_SEG_C_GPIO_Port, DISP_SEG_C_Pin, SEGMENT_ON);
+		HAL_GPIO_WritePin(LEDdisplay->SegCPort, LEDdisplay->SegCPin, SEGMENT_ON);
 	else if (segment == DISP_SEG_D)
-		HAL_GPIO_WritePin(DISP_SEG_D_GPIO_Port, DISP_SEG_D_Pin, SEGMENT_ON);
+		HAL_GPIO_WritePin(LEDdisplay->SegDPort, LEDdisplay->SegDPin, SEGMENT_ON);
 	else if (segment == DISP_SEG_E)
-		HAL_GPIO_WritePin(DISP_SEG_E_GPIO_Port, DISP_SEG_E_Pin, SEGMENT_ON);
+		HAL_GPIO_WritePin(LEDdisplay->SegEPort, LEDdisplay->SegEPin, SEGMENT_ON);
 	else if (segment == DISP_SEG_F)
-		HAL_GPIO_WritePin(DISP_SEG_F_GPIO_Port, DISP_SEG_F_Pin, SEGMENT_ON);
+		HAL_GPIO_WritePin(LEDdisplay->SegFPort, LEDdisplay->SegFPin, SEGMENT_ON);
 	else if (segment == DISP_SEG_G)
-		HAL_GPIO_WritePin(DISP_SEG_G_GPIO_Port, DISP_SEG_G_Pin, SEGMENT_ON);
+		HAL_GPIO_WritePin(LEDdisplay->SegGPort, LEDdisplay->SegGPin, SEGMENT_ON);
 	else if (segment == DISP_SEG_DOT)
-		HAL_GPIO_WritePin(DISP_SEG_DOT_GPIO_Port, DISP_SEG_DOT_Pin, SEGMENT_ON);
+		HAL_GPIO_WritePin(LEDdisplay->SegDOTPort, LEDdisplay->SegDOTPin, SEGMENT_ON);
 }
 
-static void _LEDfieldOn(uint8_t field) {
+static void _LEDfieldOn(LEDdisplayTypeDef* LEDdisplay, uint8_t field) {
 
 #if FIELDS >=1
 	if (field == FIELD_0)
-		HAL_GPIO_WritePin(DISP_FIELD_0_GPIO_Port, DISP_FIELD_0_Pin, FIELD_ON);
+		HAL_GPIO_WritePin(LEDdisplay->Field0Port, LEDdisplay->Field0Pin, FIELD_ON);
 #endif
 
 #if FIELDS >=2
 	else if (field == FIELD_1)
-		HAL_GPIO_WritePin(DISP_FIELD_1_GPIO_Port, DISP_FIELD_1_Pin, FIELD_ON);
+		HAL_GPIO_WritePin(LEDdisplay->Field1Port, LEDdisplay->Field1Pin, FIELD_ON);
 #endif
 
 #if FIELDS >=3
 	else if (field == FIELD_2)
-		HAL_GPIO_WritePin(DISP_FIELD_2_GPIO_Port, DISP_FIELD_2_Pin, FIELD_ON);
+		HAL_GPIO_WritePin(LEDdisplay->Field2Port, LEDdisplay->Field2Pin, FIELD_ON);
 #endif
 
 #if FIELDS >=4
 	else if (field == FIELD_3)
-		HAL_GPIO_WritePin(DISP_FIELD_3_GPIO_Port, DISP_FIELD_3_Pin, FIELD_ON);
+		HAL_GPIO_WritePin(LEDdisplay->Field3Port, LEDdisplay->Field3Pin, FIELD_ON);
 #endif
 }
 
-static void _LEDallOff(void) {
+static void _LEDallOff(LEDdisplayTypeDef* LEDdisplay) {
 
 #if FIELDS >=1
-	HAL_GPIO_WritePin(DISP_FIELD_0_GPIO_Port, DISP_FIELD_0_Pin, FIELD_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->Field0Port, LEDdisplay->Field0Pin, FIELD_OFF);
 #endif
 #if FIELDS >=2
-	HAL_GPIO_WritePin(DISP_FIELD_1_GPIO_Port, DISP_FIELD_1_Pin, FIELD_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->Field1Port, LEDdisplay->Field1Pin, FIELD_OFF);
 #endif
 #if FIELDS >=3
-	HAL_GPIO_WritePin(DISP_FIELD_2_GPIO_Port, DISP_FIELD_2_Pin, FIELD_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->Field2Port, LEDdisplay->Field2Pin, FIELD_OFF);
 #endif
 #if FIELDS >=4
-	HAL_GPIO_WritePin(DISP_FIELD_3_GPIO_Port, DISP_FIELD_3_Pin, FIELD_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->Field3Port, LEDdisplay->Field3Pin, FIELD_OFF);
 #endif
 
-	HAL_GPIO_WritePin(DISP_SEG_A_GPIO_Port, DISP_SEG_A_Pin, SEGMENT_OFF);
-	HAL_GPIO_WritePin(DISP_SEG_B_GPIO_Port, DISP_SEG_B_Pin, SEGMENT_OFF);
-	HAL_GPIO_WritePin(DISP_SEG_C_GPIO_Port, DISP_SEG_C_Pin, SEGMENT_OFF);
-	HAL_GPIO_WritePin(DISP_SEG_D_GPIO_Port, DISP_SEG_D_Pin, SEGMENT_OFF);
-	HAL_GPIO_WritePin(DISP_SEG_E_GPIO_Port, DISP_SEG_E_Pin, SEGMENT_OFF);
-	HAL_GPIO_WritePin(DISP_SEG_F_GPIO_Port, DISP_SEG_F_Pin, SEGMENT_OFF);
-	HAL_GPIO_WritePin(DISP_SEG_G_GPIO_Port, DISP_SEG_G_Pin, SEGMENT_OFF);
-	HAL_GPIO_WritePin(DISP_SEG_DOT_GPIO_Port, DISP_SEG_DOT_Pin, SEGMENT_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->SegAPort, LEDdisplay->SegAPin, SEGMENT_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->SegBPort, LEDdisplay->SegBPin, SEGMENT_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->SegCPort, LEDdisplay->SegCPin, SEGMENT_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->SegDPort, LEDdisplay->SegDPin, SEGMENT_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->SegEPort, LEDdisplay->SegEPin, SEGMENT_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->SegFPort, LEDdisplay->SegFPin, SEGMENT_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->SegGPort, LEDdisplay->SegGPin, SEGMENT_OFF);
+	HAL_GPIO_WritePin(LEDdisplay->SegDOTPort, LEDdisplay->SegDOTPin, SEGMENT_OFF);
 
 }
 
-static void _LEDwriteCharacter(uint8_t character) {
+static void _LEDwriteCharacter(LEDdisplayTypeDef* LEDdisplay, uint8_t character) {
 
-	if (character == 1 || character == '1') {
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-	} else if (character == 2 || character == '2') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_G);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_D);
-	} else if (character == 3 || character == '3') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_G);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_D);
-	} else if (character == 4 || character == '4') {
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-	} else if (character == 5 || character == '5') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_D);
-	} else if (character == 6 || character == '6') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_D);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-	} else if (character == 7 || character == '7') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-	} else if (character == 8 || character == '8') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_D);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-	} else if (character == 9 || character == '9') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_D);
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-	} else if (character == 0 || character == '0') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_D);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-	} else if (character == 'A') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-	} else if (character == 'C') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_D);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-	} else if (character == 'E') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_D);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-	} else if (character == 'F') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-	} else if (character == 'H') {
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-	} else if (character == 'J') {
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_D);
-	} else if (character == 'L') {
-		_LEDsegmentOn(DISP_SEG_D);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-	} else if (character == 'P') {
-		_LEDsegmentOn(DISP_SEG_A);
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-		_LEDsegmentOn(DISP_SEG_G);
-	} else if (character == 'U') {
-		_LEDsegmentOn(DISP_SEG_B);
-		_LEDsegmentOn(DISP_SEG_C);
-		_LEDsegmentOn(DISP_SEG_D);
-		_LEDsegmentOn(DISP_SEG_E);
-		_LEDsegmentOn(DISP_SEG_F);
-	} else if (character == '-') {
-		_LEDsegmentOn(DISP_SEG_G);
+	if (character >= 48 && character <= 57) {
+		switch (character) {
+		case '1':
+
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			break;
+		case '2':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			break;
+		case '3':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			break;
+		case '4':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			break;
+		case '5':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			break;
+		case '6':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			break;
+		case '7':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			break;
+		case '8':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			break;
+		case '9':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			break;
+		case '0':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			break;
+		}
+	} else {
+		switch (character){
+		case 'A':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			break;
+		case 'C':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			break;
+		case 'E':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			break;
+		case 'F':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			break;
+		case 'H':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			break;
+		case 'J':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			break;
+		case 'L':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			break;
+		case 'P':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_A);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			break;
+		case 'U':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_B);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_C);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_D);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_E);
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_F);
+			break;
+		case '-':
+			_LEDsegmentOn(LEDdisplay, DISP_SEG_G);
+			break;
+		}
 	}
 }
 
@@ -234,8 +256,10 @@ static void _LEDwriteCharacter(uint8_t character) {
  *
  * @retval None
  */
-void LEDinit(void) {
-	LEDclear();
+void LEDinit(LEDdisplayTypeDef* LEDdisplay) {
+
+	LEDclear(LEDdisplay);
+	LEDdisplay->actualField = FIELD_0;
 }
 
 /**
@@ -249,8 +273,8 @@ void LEDinit(void) {
  *
  * @retval None
  */
-void LEDchar(uint8_t offset, uint8_t character) {
-	LEDbuffer[offset] = character;
+void LEDchar(LEDdisplayTypeDef* LEDdisplay, uint8_t offset, uint8_t character) {
+	LEDdisplay->LEDbuffer[offset] = character;
 }
 
 /**
@@ -264,7 +288,7 @@ void LEDchar(uint8_t offset, uint8_t character) {
  *
  * @retval None
  */
-void LEDint(uint8_t offset, uint16_t number) {
+void LEDint(LEDdisplayTypeDef* LEDdisplay, uint8_t offset, uint16_t number) {
 
 	if (number > MAX_NUMBER)
 		number = MAX_NUMBER;
@@ -283,7 +307,7 @@ void LEDint(uint8_t offset, uint16_t number) {
 	char buffer[5];
 
 	itoa(number, buffer, 10);
-	memcpy(LEDbuffer, buffer, size);
+	memcpy(LEDdisplay->LEDbuffer, buffer, size);
 
 }
 
@@ -296,9 +320,9 @@ void LEDint(uint8_t offset, uint16_t number) {
  *
  * @retval None
  */
-void LEDclear(void) {
-	memset(LEDbuffer, ' ', FIELDS);
-	memset(DOTbuffer, 0, FIELDS);
+void LEDclear(LEDdisplayTypeDef* LEDdisplay) {
+	memset(LEDdisplay->LEDbuffer, ' ', FIELDS);
+	memset(LEDdisplay->DOTbuffer, 0, FIELDS);
 }
 
 /**
@@ -312,10 +336,10 @@ void LEDclear(void) {
  *
  * @retval None
  */
-void LEDdot(uint8_t dotNum, uint8_t active) {
+void LEDdot(LEDdisplayTypeDef* LEDdisplay, uint8_t dotNum, uint8_t active) {
 	if (active == DOT_ACTIVE)
-		DOTbuffer[dotNum] = 1;
+		LEDdisplay->DOTbuffer[dotNum] = 1;
 	else if (active == DOT_INACTIVE)
-		DOTbuffer[dotNum] = 0;
+		LEDdisplay->DOTbuffer[dotNum] = 0;
 }
 
