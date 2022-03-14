@@ -1235,7 +1235,7 @@ static void _LEDwriteCharacter(LEDdisplayTypeDef* LEDdisplay, uint8_t character)
 
 080008f0 <LEDinit>:
  *
- * @param  None
+ * @param  Display handler
  *
  * @retval None
  */
@@ -1406,7 +1406,7 @@ void LEDint(LEDdisplayTypeDef* LEDdisplay, uint8_t offset, uint16_t number) {
 
 080009e8 <LEDclear>:
  *
- * @param  None
+ * @param  Display handler
  *
  * @retval None
  */

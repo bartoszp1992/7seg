@@ -4,7 +4,7 @@
 7seg.c:82:13:_LEDallOff	16	static
 7seg.c:108:13:_LEDwriteCharacter	16	static
 7seg.c:259:6:LEDinit	16	static
-7seg.c:276:6:LEDchar	16	static
-7seg.c:291:6:LEDint	32	static
-7seg.c:323:6:LEDclear	16	static
-7seg.c:339:6:LEDdot	16	static
+7seg.c:278:6:LEDchar	16	static
+7seg.c:295:6:LEDint	32	static
+7seg.c:327:6:LEDclear	16	static
+7seg.c:345:6:LEDdot	16	static

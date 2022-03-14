@@ -252,7 +252,7 @@ static void _LEDwriteCharacter(LEDdisplayTypeDef* LEDdisplay, uint8_t character)
  *
  * @note   clear display
  *
- * @param  None
+ * @param  Display handler
  *
  * @retval None
  */
@@ -266,6 +266,8 @@ void LEDinit(LEDdisplayTypeDef* LEDdisplay) {
  * @brief  Show one char on selected field
  *
  * @note   Offset starts from 0
+ *
+ * @param  Display handler
  *
  * @param  selected field
  *
@@ -281,6 +283,8 @@ void LEDchar(LEDdisplayTypeDef* LEDdisplay, uint8_t offset, uint8_t character) {
  * @brief  Show integer starting at selected field
  *
  * @note   Offset starts from 0
+ *
+ * @param  Display handler
  *
  * @param  cursor position
  *
@@ -316,7 +320,7 @@ void LEDint(LEDdisplayTypeDef* LEDdisplay, uint8_t offset, uint16_t number) {
  *
  * @note   None
  *
- * @param  None
+ * @param  Display handler
  *
  * @retval None
  */
@@ -329,6 +333,8 @@ void LEDclear(LEDdisplayTypeDef* LEDdisplay) {
  * @brief  Show dot on selected field
  *
  * @note   Offset starts from 0
+ *
+ * @param  Display handler
  *
  * @param  cursor position
  *
