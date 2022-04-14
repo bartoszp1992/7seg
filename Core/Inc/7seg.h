@@ -5,18 +5,24 @@
  *      Author: bartosz
  */
 
-
 #ifndef SRC_7DISP_SEG_7DISP_SEG_H_
 #define SRC_7DISP_SEG_7DISP_SEG_H_
 
-
 //USER CONFIGURATION
- //set 0 for common cathode
-#define COMMON_ANODE 1
-//number of fields
-#define FIELDS 4
 
-typedef struct{
+//set 0 for common cathode
+#define LED_COMMON_ANODE 1
+
+//number of fields
+#define LED_FIELDS 4
+
+//prescaler for animation
+#define LED_TRANSITION_PRE 8
+
+//transition separator size
+#define LED_TRANSITION_SEPARATOR_SIZE 3
+
+typedef struct {
 	uint16_t SegAPin;
 	GPIO_TypeDef *SegAPort;
 	uint16_t SegBPin;
@@ -43,34 +49,52 @@ typedef struct{
 	uint16_t Field3Pin;
 	GPIO_TypeDef *Field3Port;
 
-	uint8_t LEDbuffer[FIELDS];
-	uint8_t DOTbuffer[FIELDS];
+	uint8_t digitBuffer[LED_FIELDS];
+	uint8_t dotBuffer[LED_FIELDS];
 
+	//actual display field
 	uint8_t actualField;
-} LEDdisplayTypeDef;
 
+	//actual moment of transition
+	uint8_t transitionStage;
+
+	//flag of direction processing transition(1/2), or inactive(0) - LED_TRANS
+	uint8_t transitionStatus;
+
+	char transitionSeparator[LED_TRANSITION_SEPARATOR_SIZE];
+
+	//multiplexer prescaler counter for transitions
+	uint16_t prescalerCounter;
+
+	uint8_t digitTransitionBuffer[LED_FIELDS];
+
+} LEDdisplayTypeDef;
 
 //extern TIM_HandleTypeDef htim1;
 
-#if FIELDS == 1
+#if LED_FIELDS == 1
 #define MAX_NUMBER 9
 #endif
 
-#if FIELDS == 2
+#if LED_FIELDS == 2
 #define MAX_NUMBER 99
 #endif
 
-#if FIELDS == 3
+#if LED_FIELDS == 3
 #define MAX_NUMBER 999
 #endif
 
-#if FIELDS == 4
+#if LED_FIELDS == 4
 #define MAX_NUMBER 9999
 #endif
 
+#define LED_TRANSITION_DIR_LEFT 1
+#define LED_TRANSITION_DIR_RIGHT 2
+#define LED_TRANSITION_DISABLED 0
 
+#define LED_TRANSITION_STAGES LED_FIELDS+LED_TRANSITION_SEPARATOR_SIZE
 
-#if COMMON_ANODE == 1
+#if LED_COMMON_ANODE == 1
 
 #define FIELD_ON 1
 #define FIELD_OFF 0
@@ -100,24 +124,26 @@ typedef struct{
 #define DOT_ACTIVE 1
 #define DOT_INACTIVE 0
 
-#if FIELDS >= 1
+#if LED_FIELDS >= 1
 #define FIELD_0 0
 #endif
-#if FIELDS >=2
+#if LED_FIELDS >=2
 #define FIELD_1 1
 #endif
-#if FIELDS >= 3
+#if LED_FIELDS >= 3
 #define FIELD_2 2
 #endif
-#if FIELDS >= 4
+#if LED_FIELDS >= 4
 #define FIELD_3 3
 #endif
 
-void LEDmultiplexing(LEDdisplayTypeDef* LEDdisplay);
-void LEDinit(LEDdisplayTypeDef* LEDdisplay);
-void LEDchar(LEDdisplayTypeDef* LEDdisplay, uint8_t offset, uint8_t digit);
-void LEDint(LEDdisplayTypeDef* LEDdisplay, uint8_t offset, uint16_t number);
-void LEDclear(LEDdisplayTypeDef* LEDdisplay);
-void LEDdot(LEDdisplayTypeDef* LEDdisplay, uint8_t dotNum, uint8_t active);
+void LEDmultiplexing(LEDdisplayTypeDef *LEDdisplay);
+void LEDinit(LEDdisplayTypeDef *LEDdisplay);
+void LEDclear(LEDdisplayTypeDef *LEDdisplay);
+void LEDchar(LEDdisplayTypeDef *LEDdisplay, uint8_t offset, uint8_t digit);
+void LEDint(LEDdisplayTypeDef *LEDdisplay, uint8_t offset, uint16_t number,
+		uint8_t transition);
+void LEDstr(LEDdisplayTypeDef *LEDdisplay, uint8_t offset, char* str, uint8_t transition);
+void LEDdot(LEDdisplayTypeDef *LEDdisplay, uint8_t dotNum, uint8_t active);
 
 #endif /* SRC_7DISP_SEG_7DISP_SEG_H_ */

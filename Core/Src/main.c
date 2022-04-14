@@ -44,7 +44,13 @@ TIM_HandleTypeDef htim1;
 /* USER CODE BEGIN PV */
 //LED DISPLAY-Create Structure
 LEDdisplayTypeDef disp1;
-LEDdisplayTypeDef disp2;
+
+char text1[4] = { "151A" };
+char text2[4] = { "HAL" };
+
+//encoder counter
+volatile uint16_t counter = 5000;
+volatile uint8_t flagEncoderActive = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -118,35 +124,12 @@ int main(void) {
 	disp1.SegDOTPort = DISP_SEG_DOT_GPIO_Port;
 	disp1.SegDOTPin = DISP_SEG_DOT_Pin;
 
-	disp2.Field0Port = DISP2_FIELD_0_GPIO_Port;
-	disp2.Field0Pin = DISP2_FIELD_0_Pin;
-	disp2.Field1Port = DISP2_FIELD_1_GPIO_Port;
-	disp2.Field1Pin = DISP2_FIELD_1_Pin;
-	disp2.Field2Port = DISP2_FIELD_2_GPIO_Port;
-	disp2.Field2Pin = DISP2_FIELD_2_Pin;
-	disp2.Field3Port = DISP2_FIELD_3_GPIO_Port;
-	disp2.Field3Pin = DISP2_FIELD_3_Pin;
-
-	disp2.SegAPort = DISP2_SEG_A_GPIO_Port;
-	disp2.SegAPin = DISP2_SEG_A_Pin;
-	disp2.SegBPort = DISP2_SEG_B_GPIO_Port;
-	disp2.SegBPin = DISP2_SEG_B_Pin;
-	disp2.SegCPort = DISP2_SEG_C_GPIO_Port;
-	disp2.SegCPin = DISP2_SEG_C_Pin;
-	disp2.SegDPort = DISP2_SEG_D_GPIO_Port;
-	disp2.SegDPin = DISP2_SEG_D_Pin;
-	disp2.SegEPort = DISP2_SEG_E_GPIO_Port;
-	disp2.SegEPin = DISP2_SEG_E_Pin;
-	disp2.SegFPort = DISP2_SEG_F_GPIO_Port;
-	disp2.SegFPin = DISP2_SEG_F_Pin;
-	disp2.SegGPort = DISP2_SEG_G_GPIO_Port;
-	disp2.SegGPin = DISP2_SEG_G_Pin;
-	disp2.SegDOTPort = DISP2_SEG_DOT_GPIO_Port;
-	disp2.SegDOTPin = DISP2_SEG_DOT_Pin;
+	//set transition separator
+	disp1.transitionSeparator[0] = '_';
+	disp1.transitionSeparator[1] = '_';
+	disp1.transitionSeparator[2] = '_';
 
 	LEDinit(&disp1);
-	LEDinit(&disp2);
-
 
 	/* USER CODE END 2 */
 
@@ -154,56 +137,40 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 
-		LEDchar(&disp1, 0, '-');
-		LEDchar(&disp1, 1, '-');
-		LEDchar(&disp1, 2, '-');
-		LEDchar(&disp1, 3, '-');
-
-		LEDchar(&disp2, 0, '1');
-		LEDchar(&disp2, 1, '2');
-		LEDchar(&disp2, 2, '3');
-		LEDchar(&disp2, 3, '4');
-
-		HAL_Delay(500);
-		LEDclear(&disp1);
-
 		LEDchar(&disp1, 0, 'H');
 		LEDchar(&disp1, 1, 'A');
 		LEDchar(&disp1, 2, 'L');
-
-		HAL_Delay(500);
+		HAL_Delay(300);
 		LEDclear(&disp1);
 
-		HAL_Delay(500);
 		LEDdot(&disp1, 0, DOT_ACTIVE);
-		HAL_Delay(500);
+		HAL_Delay(300);
 		LEDdot(&disp1, 1, DOT_ACTIVE);
-		HAL_Delay(500);
+		HAL_Delay(300);
 		LEDdot(&disp1, 2, DOT_ACTIVE);
-		HAL_Delay(500);
+		HAL_Delay(300);
 		LEDdot(&disp1, 3, DOT_ACTIVE);
-		HAL_Delay(500);
-
-		HAL_Delay(500);
-		LEDdot(&disp2, 0, DOT_ACTIVE);
-		HAL_Delay(500);
-		LEDdot(&disp2, 1, DOT_ACTIVE);
-		HAL_Delay(500);
-		LEDdot(&disp2, 2, DOT_ACTIVE);
-		HAL_Delay(500);
-		LEDdot(&disp2, 3, DOT_ACTIVE);
-		HAL_Delay(500);
-
+		HAL_Delay(300);
 		LEDclear(&disp1);
-		LEDclear(&disp2);
-		HAL_Delay(500);
 
-		for (uint16_t i = 0; i < 10000; i++) {
+		for (uint16_t i = 9000; i < 10000; i++) {
 			LEDclear(&disp1);
-			LEDint(&disp1, 0, i);
-			LEDint(&disp2, 0, 10000 - i);
+			LEDint(&disp1, 0, i, LED_TRANSITION_DISABLED);
 			HAL_Delay(1);
 		}
+		LEDclear(&disp1);
+
+		LEDstr(&disp1, 0, "Err", LED_TRANSITION_DIR_LEFT);
+		HAL_Delay(500);
+		LEDstr(&disp1, 0, "LEd", LED_TRANSITION_DIR_RIGHT);
+		HAL_Delay(500);
+
+		LEDstr(&disp1, 0, "Err", LED_TRANSITION_DIR_LEFT);
+		HAL_Delay(500);
+		LEDstr(&disp1, 0, "LEd", LED_TRANSITION_DIR_RIGHT);
+		HAL_Delay(500);
+
+		LEDclear(&disp1);
 
 		/* USER CODE END WHILE */
 
@@ -301,32 +268,26 @@ static void MX_GPIO_Init(void) {
 
 	/* GPIO Ports Clock Enable */
 	__HAL_RCC_GPIOB_CLK_ENABLE();
-	__HAL_RCC_GPIOC_CLK_ENABLE();
 	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOC_CLK_ENABLE();
 
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOB,
-			LED_GREEN_Pin | DISP2_FIELD_1_Pin | DISP2_SEG_F_Pin
-					| DISP2_SEG_A_Pin | DISP_FIELD_3_Pin | DISP_SEG_G_Pin
-					| DISP_SEG_C_Pin | DISP_SEG_DOT_Pin | DISP_SEG_D_Pin
-					| DISP_SEG_E_Pin, GPIO_PIN_RESET);
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOC, DISP2_SEG_E_Pin | DISP_SEG_A_Pin, GPIO_PIN_RESET);
+			LED_GREEN_Pin | DISP_FIELD_3_Pin | DISP_SEG_G_Pin | DISP_SEG_C_Pin
+					| DISP_SEG_DOT_Pin | DISP_SEG_D_Pin | DISP_SEG_E_Pin,
+			GPIO_PIN_RESET);
 
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOA,
-			DISP2_SEG_D_Pin | DISP2_SEG_DOT_Pin | DISP2_SEG_C_Pin
-					| DISP2_SEG_G_Pin | DISP2_FIELD_3_Pin | DISP2_SEG_B_Pin
-					| DISP2_FIELD_2_Pin | DISP2_FIELD_0_Pin | DISP_FIELD_0_Pin
-					| DISP_SEG_F_Pin | DISP_FIELD_1_Pin | DISP_FIELD_2_Pin
-					| DISP_SEG_B_Pin, GPIO_PIN_RESET);
+			DISP_FIELD_0_Pin | DISP_SEG_F_Pin | DISP_FIELD_1_Pin
+					| DISP_FIELD_2_Pin | DISP_SEG_B_Pin, GPIO_PIN_RESET);
 
-	/*Configure GPIO pins : LED_GREEN_Pin DISP2_FIELD_1_Pin DISP2_SEG_F_Pin DISP2_SEG_A_Pin
-	 DISP_FIELD_3_Pin DISP_SEG_G_Pin DISP_SEG_C_Pin DISP_SEG_DOT_Pin
-	 DISP_SEG_D_Pin DISP_SEG_E_Pin */
-	GPIO_InitStruct.Pin = LED_GREEN_Pin | DISP2_FIELD_1_Pin | DISP2_SEG_F_Pin
-			| DISP2_SEG_A_Pin | DISP_FIELD_3_Pin | DISP_SEG_G_Pin
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(DISP_SEG_A_GPIO_Port, DISP_SEG_A_Pin, GPIO_PIN_RESET);
+
+	/*Configure GPIO pins : LED_GREEN_Pin DISP_FIELD_3_Pin DISP_SEG_G_Pin DISP_SEG_C_Pin
+	 DISP_SEG_DOT_Pin DISP_SEG_D_Pin DISP_SEG_E_Pin */
+	GPIO_InitStruct.Pin = LED_GREEN_Pin | DISP_FIELD_3_Pin | DISP_SEG_G_Pin
 			| DISP_SEG_C_Pin | DISP_SEG_DOT_Pin | DISP_SEG_D_Pin
 			| DISP_SEG_E_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -334,32 +295,37 @@ static void MX_GPIO_Init(void) {
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-	/*Configure GPIO pins : DISP2_SEG_E_Pin DISP_SEG_A_Pin */
-	GPIO_InitStruct.Pin = DISP2_SEG_E_Pin | DISP_SEG_A_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-	/*Configure GPIO pins : DISP2_SEG_D_Pin DISP2_SEG_DOT_Pin DISP2_SEG_C_Pin DISP2_SEG_G_Pin
-	 DISP2_FIELD_3_Pin DISP2_SEG_B_Pin DISP2_FIELD_2_Pin DISP2_FIELD_0_Pin
-	 DISP_FIELD_0_Pin DISP_SEG_F_Pin DISP_FIELD_1_Pin DISP_FIELD_2_Pin
-	 DISP_SEG_B_Pin */
-	GPIO_InitStruct.Pin = DISP2_SEG_D_Pin | DISP2_SEG_DOT_Pin | DISP2_SEG_C_Pin
-			| DISP2_SEG_G_Pin | DISP2_FIELD_3_Pin | DISP2_SEG_B_Pin
-			| DISP2_FIELD_2_Pin | DISP2_FIELD_0_Pin | DISP_FIELD_0_Pin
-			| DISP_SEG_F_Pin | DISP_FIELD_1_Pin | DISP_FIELD_2_Pin
-			| DISP_SEG_B_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
 	/*Configure GPIO pin : BUTTON_Pin */
 	GPIO_InitStruct.Pin = BUTTON_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(BUTTON_GPIO_Port, &GPIO_InitStruct);
+
+	/*Configure GPIO pins : ENC_L_Pin ENC_R_Pin */
+	GPIO_InitStruct.Pin = ENC_L_Pin | ENC_R_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	/*Configure GPIO pins : DISP_FIELD_0_Pin DISP_SEG_F_Pin DISP_FIELD_1_Pin DISP_FIELD_2_Pin
+	 DISP_SEG_B_Pin */
+	GPIO_InitStruct.Pin = DISP_FIELD_0_Pin | DISP_SEG_F_Pin | DISP_FIELD_1_Pin
+			| DISP_FIELD_2_Pin | DISP_SEG_B_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	/*Configure GPIO pin : DISP_SEG_A_Pin */
+	GPIO_InitStruct.Pin = DISP_SEG_A_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(DISP_SEG_A_GPIO_Port, &GPIO_InitStruct);
+
+	/* EXTI interrupt init*/
+	HAL_NVIC_SetPriority(EXTI4_15_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
 }
 
@@ -368,10 +334,34 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 	if (htim->Instance == TIM1) {
 		LEDmultiplexing(&disp1);
-		LEDmultiplexing(&disp2);
+//		LEDmultiplexing(&disp2);
 	}
 
 }
+
+void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin) {
+
+	flagEncoderActive = 1;
+	if (GPIO_Pin == ENC_L_Pin) {
+		if (HAL_GPIO_ReadPin(ENC_R_GPIO_Port, ENC_R_Pin)
+				!= HAL_GPIO_ReadPin(ENC_L_GPIO_Port, ENC_L_Pin)) {
+
+//			LEDstr(&disp1, 0, text1, LED_TRANSITION_DIR_LEFT);
+			counter++;
+
+		}
+	}
+	if (GPIO_Pin == ENC_R_Pin) {
+		if (HAL_GPIO_ReadPin(ENC_R_GPIO_Port, ENC_R_Pin)
+				!= HAL_GPIO_ReadPin(ENC_L_GPIO_Port, ENC_L_Pin)) {
+
+//			LEDstr(&disp1, 0, text2, LED_TRANSITION_DIR_RIGHT);
+			counter--;
+		}
+	}
+
+}
+
 /* USER CODE END 4 */
 
 /**
